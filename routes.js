@@ -5,7 +5,7 @@ const InputData = ((req, res) => {
         if (Url === '/') {
             res.write('<html>')
             res.write('<body>')
-            res.write('<p>MY paragraph</p>')
+            res.write('<p>my paragraph</p>')
             res.write('<form method="POST" action="/contact" > <input type="text" name="Submit"/><button type="submit">Submit</button> </form>')
             res.write('</body>')
             res.write('</html>')
