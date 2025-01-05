@@ -1,4 +1,10 @@
-const http = require('http');
-const routes=require('./routes')
-const Server =  http.createServer(routes.handler)
-Server.listen(8000)
+const express = require("express");
+const app = express();
+const cors = require("cors");
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+const storeRoutes = require("./routes/store");
+app.use(storeRoutes);
+
+app.listen(8000);
