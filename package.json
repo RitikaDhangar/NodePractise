@@ -18,6 +18,9 @@
   },
   "homepage": "https://github.com/RitikaDhangar/NodePractise#readme",
   "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
     "nodemon": "^3.1.9"
   }
 }
