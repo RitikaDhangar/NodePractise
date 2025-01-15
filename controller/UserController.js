@@ -45,3 +45,13 @@ exports.loginUser = async (req, res) => {
     res.send({ message: "something west wrong", success: 0, err });
   }
 };
+exports.getAllUsers = async (req, res) => {
+  try {
+    let allusers = await User.findAll({
+    });
+    allusers = allusers.map((item) => item.toJSON());
+    return res.send({ message: "All users list", success: 1,data:allusers });
+  } catch (err) {
+    res.send({ message: "something west wrong", success: 0, err });
+  }
+};
