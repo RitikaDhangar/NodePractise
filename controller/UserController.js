@@ -1,4 +1,7 @@
 const User = require("../model/User");
+const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 exports.postuserInfo = async (req, res) => {
   try {
     const { username, useremail, userpassword } = req.body;
@@ -13,17 +16,21 @@ exports.postuserInfo = async (req, res) => {
     if (isUserExist) {
       return res.send({ message: "User already Exist", success: 0 });
     }
-
+    const saltRounds = 10;
+    const hashPassword = await bcrypt.hash(userpassword, saltRounds);
     await User.create({
       useremail,
       username,
-      userpassword,
+      userpassword: hashPassword,
     });
     return res.send({ message: "Create User Successfully", success: 1 });
   } catch (err) {
     res.send({ message: "something west wrong", success: 0, err });
   }
 };
+const getAuthorizationToken = (user) => {
+    return jwt.sign({userid:user.id,username:user.username},process.env.SECRET_KEY,{expiresIn:'1h'})
+}
 exports.loginUser = async (req, res) => {
   try {
     const { useremail, userpassword } = req.body;
@@ -33,14 +40,28 @@ exports.loginUser = async (req, res) => {
     const isUserExist = await User.findOne({
       where: {
         useremail,
-        userpassword,
       },
     });
-    if (isUserExist) {
-      return res.send({ message: "User LoggedIn Successfully", success: 1 });
-    } else {
-        return res.send({ message: "User crediental are invalid", success: 0 });
+
+    if (!isUserExist) {
+      return res.send({ message: "User does not exist", success: 0 });
     }
+    const isMatch = await bcrypt.compare(
+      userpassword,
+      isUserExist?.userpassword
+    );
+    if (!isMatch) {
+      return res.send({
+        message: "Password is incorrect",
+        success: 0,
+      });
+    }
+    const token=getAuthorizationToken(isUserExist);
+    return res.send({
+      message: "User LoggedIn Successfully",
+      success: 1,
+      token
+    });
   } catch (err) {
     res.send({ message: "something west wrong", success: 0, err });
   }
