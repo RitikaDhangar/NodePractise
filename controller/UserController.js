@@ -1,7 +1,7 @@
 const User = require("../model/User");
 const bcrypt = require("bcrypt");
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 exports.postuserInfo = async (req, res) => {
   try {
     const { username, useremail, userpassword } = req.body;
@@ -29,8 +29,16 @@ exports.postuserInfo = async (req, res) => {
   }
 };
 const getAuthorizationToken = (user) => {
-    return jwt.sign({userid:user.id,username:user.username},process.env.SECRET_KEY,{expiresIn:'1h'})
-}
+  return jwt.sign(
+    {
+      userid: user.id,
+      username: user.username,
+      isPremiumUser: user.isPremiumUser,
+    },
+    process.env.JWT_SECRET_KEY,
+    { expiresIn: "1h" }
+  );
+};
 exports.loginUser = async (req, res) => {
   try {
     const { useremail, userpassword } = req.body;
@@ -56,11 +64,11 @@ exports.loginUser = async (req, res) => {
         success: 0,
       });
     }
-    const token=getAuthorizationToken(isUserExist);
+    const token = getAuthorizationToken(isUserExist);
     return res.send({
       message: "User LoggedIn Successfully",
       success: 1,
-      token
+      token,
     });
   } catch (err) {
     res.send({ message: "something west wrong", success: 0, err });
