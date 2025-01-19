@@ -1,12 +1,12 @@
 const Expense = require("../model/Expense");
 exports.addNewExpense = async (req, res) => {
   try {
-      let { price, description, category } = req.body;
-      price = Number(price);
-      if (!price) {
-        res.send({ message: "Please provide valid price", success: 0 });
-      }
-    await Expense.create({
+    let { price, description, category } = req.body;
+    price = Number(price);
+    if (!price) {
+      res.send({ message: "Please provide valid price", success: 0 });
+    }
+    await req.user.createExpense({
       price,
       description,
       category,
@@ -18,7 +18,7 @@ exports.addNewExpense = async (req, res) => {
 };
 exports.fetchAllExpenses = async (req, res) => {
   try {
-    let allExpenses = await Expense.findAll();
+    let allExpenses = await req.user.getExpenses();
     allExpenses = allExpenses.map((expense) => expense.toJSON());
     res.send({ message: "all expenses", success: 1, data: allExpenses });
   } catch (err) {
@@ -26,14 +26,9 @@ exports.fetchAllExpenses = async (req, res) => {
   }
 };
 exports.deleteExpense = async (req, res) => {
-  console.log("🚀 ~ exports.deleteExpense ~ req:", req.params.id)
   try {
-    const {id} = req.params;
-    await Expense.destroy({
-      where: {
-        id,
-      },
-    });
+    const { id } = req.params;
+    await req.user.removeExpense(id);
     res.send({ message: "Expense delete successfully", success: 1 });
   } catch (err) {
     res.send({ message: "something went wrong", success: 0, err });
